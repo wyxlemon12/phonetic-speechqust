@@ -1,4 +1,4 @@
-import { createApp } from '../server.ts';
+import { createApp } from './app.ts';
 
 let appPromise = null;
 
