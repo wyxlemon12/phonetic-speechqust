@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import express from 'express';
+import { createServer } from 'node:http';
 
 test('server forwards TTS requests to SiliconFlow CN endpoint', async () => {
   const originalNodeEnv = process.env.NODE_ENV;
@@ -22,11 +24,13 @@ test('server forwards TTS requests to SiliconFlow CN endpoint', async () => {
   }) as typeof fetch;
 
   try {
-    const { createApp } = await import('../server.ts');
-    const app = await createApp();
+    const { default: handler } = await import('../api/index.ts');
+
+    const app = express();
+    app.use((req, res) => handler(req as any, res as any));
 
     const server = await new Promise<import('node:http').Server>((resolve) => {
-      const instance = app.listen(0, '127.0.0.1', () => resolve(instance));
+      const instance = createServer(app).listen(0, '127.0.0.1', () => resolve(instance));
     });
 
     try {
