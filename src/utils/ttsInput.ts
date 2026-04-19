@@ -17,7 +17,7 @@ export function buildTtsRequest(text: string, speed = 1.0): TtsRequestConfig {
     const spacedWord = Array.from(trimmed).join(' ');
     return {
       input: `請清楚、放慢一些，把每個字都讀完整，尤其最後一個字不要吞音。<|endofprompt|>${spacedWord}。`,
-      speed: Math.min(speed, 0.82),
+      speed,
     };
   }
 
