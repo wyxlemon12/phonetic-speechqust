@@ -15,11 +15,8 @@ function buildTtsRequest(text: string, speed = 1.0) {
   }
 
   if (countHanCharacters(trimmed) <= 3) {
-    const spacedWord = Array.from(trimmed).join(" ");
-    return {
-      input: `請清楚、放慢一些，把每個字都讀完整，尤其最後一個字不要吞音。<|endofprompt|>${spacedWord}。`,
-      speed: Math.min(speed, 0.82),
-    };
+    const pausedWord = Array.from(trimmed).map((char) => `${char}……`).join("");
+    return { input: pausedWord, speed };
   }
 
   return { input: trimmed, speed };
@@ -65,7 +62,7 @@ async function createApp() {
       const ttsInput = ttsRequest.input;
 
       console.log(`[Server TTS] Attempting SiliconFlow | Text: "${ttsInput.substring(0, 20)}..."`);
-      console.log('[Server TTS] Payload', {
+      console.log("[Server TTS] Payload", {
         originalText: text,
         cleanText,
         ttsInput,
