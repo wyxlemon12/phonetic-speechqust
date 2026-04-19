@@ -15,7 +15,7 @@ function buildTtsRequest(text: string, speed = 1.0) {
   }
 
   if (countHanCharacters(trimmed) <= 3) {
-    const pausedWord = Array.from(trimmed).map((char) => `${char}……`).join("");
+    const pausedWord = Array.from(trimmed).map((char) => `${char}，`).join("");
     return { input: pausedWord, speed };
   }
 
