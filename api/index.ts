@@ -65,6 +65,12 @@ async function createApp() {
       const ttsInput = ttsRequest.input;
 
       console.log(`[Server TTS] Attempting SiliconFlow | Text: "${ttsInput.substring(0, 20)}..."`);
+      console.log('[Server TTS] Payload', {
+        originalText: text,
+        cleanText,
+        ttsInput,
+        speed: ttsRequest.speed,
+      });
 
       const sfResponse = await fetch(siliconFlowUrl, {
         method: "POST",
