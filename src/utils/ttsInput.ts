@@ -1,14 +1,25 @@
+export interface TtsRequestConfig {
+  input: string;
+  speed: number;
+}
+
 function countHanCharacters(text: string) {
   return (text.match(/[\u4e00-\u9fff]/g) || []).length;
 }
 
-export function buildTtsInput(text: string) {
+export function buildTtsRequest(text: string, speed = 1.0): TtsRequestConfig {
   const trimmed = text.trim();
-  if (!trimmed) return trimmed;
-
-  if (countHanCharacters(trimmed) <= 3) {
-    return `請用更慢一點、更完整的方式清楚朗讀這個詞。<|endofprompt|>${trimmed}。`;
+  if (!trimmed) {
+    return { input: trimmed, speed };
   }
 
-  return trimmed;
+  if (countHanCharacters(trimmed) <= 3) {
+    const spacedWord = Array.from(trimmed).join(' ');
+    return {
+      input: `請清楚、放慢一些，把每個字都讀完整，尤其最後一個字不要吞音。<|endofprompt|>${spacedWord}。`,
+      speed: Math.min(speed, 0.82),
+    };
+  }
+
+  return { input: trimmed, speed };
 }

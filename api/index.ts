@@ -8,15 +8,21 @@ function countHanCharacters(text: string) {
   return (text.match(/[\u4e00-\u9fff]/g) || []).length;
 }
 
-function buildTtsInput(text: string) {
+function buildTtsRequest(text: string, speed = 1.0) {
   const trimmed = text.trim();
-  if (!trimmed) return trimmed;
-
-  if (countHanCharacters(trimmed) <= 3) {
-    return `請用更慢一點、更完整的方式清楚朗讀這個詞。<|endofprompt|>${trimmed}。`;
+  if (!trimmed) {
+    return { input: trimmed, speed };
   }
 
-  return trimmed;
+  if (countHanCharacters(trimmed) <= 3) {
+    const spacedWord = Array.from(trimmed).join(" ");
+    return {
+      input: `請清楚、放慢一些，把每個字都讀完整，尤其最後一個字不要吞音。<|endofprompt|>${spacedWord}。`,
+      speed: Math.min(speed, 0.82),
+    };
+  }
+
+  return { input: trimmed, speed };
 }
 
 function sanitizeTtsText(text: string) {
@@ -55,7 +61,8 @@ async function createApp() {
 
     try {
       const cleanText = sanitizeTtsText(text);
-      const ttsInput = buildTtsInput(t2s ? t2s(cleanText || text) : (cleanText || text));
+      const ttsRequest = buildTtsRequest(t2s ? t2s(cleanText || text) : (cleanText || text), speed);
+      const ttsInput = ttsRequest.input;
 
       console.log(`[Server TTS] Attempting SiliconFlow | Text: "${ttsInput.substring(0, 20)}..."`);
 
@@ -70,7 +77,7 @@ async function createApp() {
           model: "FunAudioLLM/CosyVoice2-0.5B",
           input: ttsInput,
           voice: "FunAudioLLM/CosyVoice2-0.5B:anna",
-          speed,
+          speed: ttsRequest.speed,
           response_format: "mp3",
         }),
       });

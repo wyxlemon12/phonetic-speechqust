@@ -1,16 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildTtsInput } from '../src/utils/ttsInput.ts';
+import { buildTtsRequest } from '../src/utils/ttsInput.ts';
 
-test('buildTtsInput keeps normal sentences unchanged', () => {
-  assert.equal(buildTtsInput('今天我們一起去冒險'), '今天我們一起去冒險');
+test('buildTtsRequest keeps normal sentences unchanged', () => {
+  const result = buildTtsRequest('今天我們一起去冒險', 1.0);
+
+  assert.equal(result.input, '今天我們一起去冒險');
+  assert.equal(result.speed, 1.0);
 });
 
-test('buildTtsInput expands very short practice words with hidden pacing prompt', () => {
-  const result = buildTtsInput('竹子');
+test('buildTtsRequest expands very short practice words with pacing prompt and slower speed', () => {
+  const result = buildTtsRequest('竹子', 1.0);
 
-  assert.match(result, /<\|endofprompt\|>/);
-  assert.match(result, /竹子。$/);
-  assert.match(result, /慢一點/);
+  assert.match(result.input, /<\|endofprompt\|>/);
+  assert.match(result.input, /竹 子。$/);
+  assert.match(result.input, /最後一個字不要吞音/);
+  assert.equal(result.speed, 0.82);
 });
