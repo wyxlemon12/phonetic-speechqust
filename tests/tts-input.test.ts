@@ -13,10 +13,6 @@ test('buildTtsRequest keeps normal sentences unchanged', () => {
 test('buildTtsRequest expands very short practice words with pacing prompt and slower speed', () => {
   const result = buildTtsRequest('竹子', 1.0);
 
-  assert.match(result.input, /<\|endofprompt\|>/);
-  assert.match(result.input, /竹 子。$/);
-  assert.match(result.input, /逐字清楚示範/);
-  assert.match(result.input, /字與字之間稍微停頓/);
-  assert.match(result.input, /最後一個字不要吞音/);
+  assert.equal(result.input, '竹……子……');
   assert.equal(result.speed, 1.0);
 });
